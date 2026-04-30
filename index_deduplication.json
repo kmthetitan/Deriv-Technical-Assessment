@@ -1,0 +1,133 @@
+[
+  {
+    "table": "users",
+    "columns": [
+      "last_login",
+      "country_code"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_last_login_country_code",
+    "candidates": [
+      "idx_users_last_login_country_code"
+    ]
+  },
+  {
+    "table": "positions",
+    "columns": [
+      "status",
+      "account_id"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_positions_status_account_id",
+    "candidates": [
+      "idx_positions_status_account_id"
+    ]
+  },
+  {
+    "table": "accounts",
+    "columns": [
+      "user_id"
+    ],
+    "decision": "deduplicated",
+    "reason": "identical index recommendations",
+    "kept_index": "idx_accounts_user_id",
+    "removed_indexes": [
+      "idx_accounts_user_id"
+    ],
+    "candidates": [
+      "idx_accounts_user_id",
+      "idx_accounts_user_id"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "email"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_email",
+    "candidates": [
+      "idx_users_email"
+    ]
+  },
+  {
+    "table": "transactions",
+    "columns": [
+      "account_id",
+      "transaction_type",
+      "status",
+      "created_at"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_transactions_account_id_type_status_created_at",
+    "candidates": [
+      "idx_transactions_account_id_type_status_created_at"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "id"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_id",
+    "candidates": [
+      "idx_users_id"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "created_at"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_created_at",
+    "candidates": [
+      "idx_users_created_at"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "country_code",
+      "created_at"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_country_code_created_at",
+    "candidates": [
+      "idx_users_country_code_created_at"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "kyc_status"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_kyc_status",
+    "candidates": [
+      "idx_users_kyc_status"
+    ]
+  },
+  {
+    "table": "users",
+    "columns": [
+      "created_at",
+      "last_login"
+    ],
+    "decision": "kept",
+    "reason": "unique recommendation",
+    "kept_index": "idx_users_created_at_last_login",
+    "candidates": [
+      "idx_users_created_at_last_login"
+    ]
+  }
+]

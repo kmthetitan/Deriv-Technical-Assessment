@@ -1,0 +1,205 @@
+[
+  {
+    "table": "users",
+    "column": "country_code",
+    "issue_type": "datatype_risk",
+    "severity": "low",
+    "recommendation": "The `country_code` column is defined as CHAR(2). While this might seem efficient for storage, it can lead to issues with case sensitivity and potential data entry errors (e.g., 'US' vs 'us'). Consider using a more robust method for country codes, such as a lookup table or a standardized format if possible. If CHAR(2) is strictly required, ensure consistent casing during data insertion."
+  },
+  {
+    "table": "users",
+    "column": "kyc_status",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "The `kyc_status` column is frequently used for filtering and reporting (e.g., finding users with 'pending' KYC). Adding an index on `kyc_status` can significantly speed up queries that filter by this status."
+  },
+  {
+    "table": "users",
+    "column": "referral_source",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter or sort by `referral_source`, an index on this column will improve performance. Consider its cardinality and typical usage patterns."
+  },
+  {
+    "table": "users",
+    "column": "last_login",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter users based on their last login time (e.g., finding inactive users) will benefit from an index on `last_login`."
+  },
+  {
+    "table": "accounts",
+    "column": "account_type",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries often filter or group accounts by `account_type`, an index on this column will improve performance. Consider its cardinality and typical query patterns."
+  },
+  {
+    "table": "accounts",
+    "column": "currency",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries often filter or group accounts by `currency`, an index on this column will improve performance. Consider its cardinality and typical query patterns."
+  },
+  {
+    "table": "accounts",
+    "column": "is_active",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter active or inactive accounts will be much faster with an index on `is_active`."
+  },
+  {
+    "table": "positions",
+    "column": "symbol",
+    "issue_type": "missing_index",
+    "severity": "high",
+    "recommendation": "The `symbol` column is likely to be used in filtering and joining operations (e.g., finding all open positions for a specific symbol). An index on `symbol` is crucial for performance."
+  },
+  {
+    "table": "positions",
+    "column": "direction",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter positions by `direction` (e.g., 'long' or 'short'), an index on this column will improve performance."
+  },
+  {
+    "table": "positions",
+    "column": "status",
+    "issue_type": "missing_index",
+    "severity": "high",
+    "recommendation": "The `status` column (e.g., 'open', 'closed') is a prime candidate for indexing, especially for queries that need to find open positions. This will significantly speed up lookups."
+  },
+  {
+    "table": "positions",
+    "column": "opened_at",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter or sort positions by their opening time will benefit from an index on `opened_at`."
+  },
+  {
+    "table": "positions",
+    "column": "closed_at",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter positions by their closing time (e.g., finding recently closed positions) will benefit from an index on `closed_at`."
+  },
+  {
+    "table": "transactions",
+    "column": "transaction_type",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter or group transactions by `transaction_type`, an index on this column will improve performance."
+  },
+  {
+    "table": "transactions",
+    "column": "currency",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter or group transactions by `currency`, an index on this column will improve performance."
+  },
+  {
+    "table": "transactions",
+    "column": "status",
+    "issue_type": "missing_index",
+    "severity": "high",
+    "recommendation": "The `status` column (e.g., 'pending', 'processed') is likely to be used for filtering and operational monitoring. An index on `status` will greatly improve query performance."
+  },
+  {
+    "table": "transactions",
+    "column": "processed_at",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter transactions based on their processing time will benefit from an index on `processed_at`."
+  },
+  {
+    "table": "transactions",
+    "column": "reference",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently search for transactions using the `reference` field, an index on this column will improve performance. Consider if this is a frequently used search key."
+  },
+  {
+    "table": "audit_log",
+    "column": "user_id",
+    "issue_type": "missing_index",
+    "severity": "high",
+    "recommendation": "The `user_id` column in `audit_log` is a foreign key and is likely to be used for querying audit trails for specific users. An index is essential for efficient retrieval."
+  },
+  {
+    "table": "audit_log",
+    "column": "action",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter audit logs by specific `action` types, an index on this column will improve performance."
+  },
+  {
+    "table": "audit_log",
+    "column": "created_at",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "Queries that filter or sort audit logs by their creation time will benefit from an index on `created_at`."
+  },
+  {
+    "table": "audit_log",
+    "column": "ip_address",
+    "issue_type": "missing_index",
+    "severity": "medium",
+    "recommendation": "If queries frequently filter audit logs by `ip_address`, an index on this column will improve performance."
+  },
+  {
+    "table": "accounts",
+    "column": "user_id",
+    "issue_type": "unsupported_foreign_key",
+    "severity": "low",
+    "recommendation": "While `accounts.user_id` references `users.id`, there isn't an explicit `ON DELETE` or `ON UPDATE` constraint defined. While not strictly a performance issue, it's good practice to define these to manage referential integrity and potentially optimize cascading operations. Consider `ON DELETE CASCADE` or `ON DELETE SET NULL` depending on business logic."
+  },
+  {
+    "table": "positions",
+    "column": "account_id",
+    "issue_type": "unsupported_foreign_key",
+    "severity": "low",
+    "recommendation": "Similar to `accounts.user_id`, the `positions.account_id` foreign key lacks explicit `ON DELETE` or `ON UPDATE` actions. Consider defining these to manage referential integrity and cascading effects."
+  },
+  {
+    "table": "transactions",
+    "column": "account_id",
+    "issue_type": "unsupported_foreign_key",
+    "severity": "low",
+    "recommendation": "The `transactions.account_id` foreign key should have defined `ON DELETE` and `ON UPDATE` actions to ensure referential integrity and manage cascading behavior."
+  },
+  {
+    "table": "audit_log",
+    "column": "user_id",
+    "issue_type": "unsupported_foreign_key",
+    "severity": "low",
+    "recommendation": "The `audit_log.user_id` foreign key should have defined `ON DELETE` and `ON UPDATE` actions to manage referential integrity and cascading effects."
+  },
+  {
+    "table": "positions",
+    "column": "pnl",
+    "issue_type": "other",
+    "severity": "low",
+    "recommendation": "The `pnl` (profit and loss) column is a calculated value. If it's always derived from `stake`, `entry_price`, `current_price`, and `direction`, consider calculating it on-the-fly in queries or using a generated column. Storing it directly might lead to data inconsistency if not updated properly. If it's a snapshot at a certain point, ensure its update logic is robust."
+  },
+  {
+    "table": "users",
+    "column": "email",
+    "issue_type": "redundant_index",
+    "severity": "low",
+    "recommendation": "The `email` column has a `UNIQUE NOT NULL` constraint. PostgreSQL automatically creates a unique index for such constraints. The explicitly created `idx_users_email` is redundant and can be removed."
+  },
+  {
+    "table": "accounts",
+    "column": "user_id",
+    "issue_type": "redundant_index",
+    "severity": "low",
+    "recommendation": "The `user_id` column in `accounts` is a foreign key referencing `users(id)`. PostgreSQL typically creates an index on foreign key columns automatically to optimize join performance. The explicitly created `idx_accounts_user_id` might be redundant. Verify if it's indeed automatically created."
+  },
+  {
+    "table": "positions",
+    "column": "account_id",
+    "issue_type": "redundant_index",
+    "severity": "low",
+    "recommendation": "The `account_id` column in `positions` is a foreign key referencing `accounts(id)`. PostgreSQL typically creates an index on foreign key columns automatically. The explicitly created `idx_positions_account_id` might be redundant. Verify if it's indeed automatically created."
+  }
+]

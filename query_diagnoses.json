@@ -1,0 +1,86 @@
+[
+  {
+    "query_id": "Q1",
+    "execution_plan_narrative": "The query starts by scanning the 'users' table. It filters records where 'last_login' is within the last 30 days. Then, it applies a function 'DATE(last_login)' to extract the date part from 'last_login' for grouping. It groups the results by the extracted date and 'country_code', and then counts the number of users in each group. Finally, it sorts the aggregated results by 'login_date' in descending order and then by 'dau' in descending order.",
+    "bottleneck": "The primary bottleneck is likely the lack of an index that can efficiently filter by 'last_login' within the last 30 days and then support the grouping and sorting operations. The `DATE(last_login)` function applied in the WHERE clause and GROUP BY clause prevents the existing `idx_users_email` index from being fully utilized for filtering. PostgreSQL might have to perform a sequential scan on the 'users' table or an index scan on `idx_users_email` and then filter based on the `last_login` condition, followed by the costly date extraction and grouping.",
+    "affected_tables": [
+      "users"
+    ],
+    "affected_columns": [
+      "last_login",
+      "country_code"
+    ],
+    "issue_classification": "missing_index"
+  },
+  {
+    "query_id": "Q2",
+    "execution_plan_narrative": "The query starts with a sequential scan on the 'positions' table. It then filters for 'open' positions. For each 'open' position, it joins with the 'accounts' table on 'account_id', and then joins with the 'users' table on 'user_id'. Finally, it groups the results by 'email' and 'currency' to calculate the sum of 'pnl' and the count of positions, and then sorts the aggregated results by 'total_pnl' in descending order.",
+    "bottleneck": "The primary bottleneck is the lack of an appropriate index on the 'positions' table to efficiently filter by 'status' and to support the join with 'accounts'. Additionally, the join with 'accounts' and then 'users' might be inefficient without proper indexing on the foreign key columns. The final sort operation on a potentially large result set can also contribute to the slowness.",
+    "affected_tables": [
+      "positions",
+      "accounts",
+      "users"
+    ],
+    "affected_columns": [
+      "positions.status",
+      "positions.account_id",
+      "accounts.id",
+      "accounts.user_id",
+      "users.id",
+      "positions.pnl",
+      "users.email",
+      "accounts.currency"
+    ],
+    "issue_classification": "missing_index"
+  },
+  {
+    "query_id": "Q3",
+    "execution_plan_narrative": "The query starts by scanning the 'transactions' table. It filters transactions based on 'transaction_type', 'status', and a time range ('created_at' within the last 90 days). This filtering likely involves a sequential scan or a scan using existing indexes if they exist on these columns. After filtering, it performs a Nested Loop Join with the 'accounts' table using 'account_id'. For each qualifying transaction, it then performs another Nested Loop Join with the 'users' table using 'user_id'. Finally, it sorts the results by 'created_at' in descending order.",
+    "bottleneck": "The primary bottleneck is likely the join operations between 'transactions', 'accounts', and 'users' without optimal indexing for the join conditions. While 'idx_accounts_user_id' exists, there's no index specifically on 'transactions.account_id' or a composite index that would efficiently support the join and filtering. The filtering on 'transactions' might also be inefficient if it's not leveraging all available filter conditions effectively. The final sort operation could also contribute to the slowness if the number of rows being sorted is large.",
+    "affected_tables": [
+      "transactions",
+      "accounts",
+      "users"
+    ],
+    "affected_columns": [
+      "transactions.account_id",
+      "transactions.transaction_type",
+      "transactions.status",
+      "transactions.created_at",
+      "accounts.user_id",
+      "users.id"
+    ],
+    "issue_classification": "missing_index"
+  },
+  {
+    "query_id": "Q4",
+    "execution_plan_narrative": "The query starts by scanning the 'users' table. Due to the WHERE clause filtering on 'created_at', PostgreSQL will likely perform a sequential scan of the 'users' table or use an index if one exists on 'created_at'. The WHERE clause filters records created on or after '2024-01-01'. After filtering, the database groups the remaining rows by 'country_code'. For each group, it calculates the counts of users with 'verified', 'pending', and 'rejected' KYC statuses using conditional aggregation (COUNT(*) FILTER). Finally, it computes the average number of days between user creation and their last login by extracting the difference in seconds, converting it to days, and then averaging this value. The results are then ordered by the 'verified' count in descending order.",
+    "bottleneck": "The primary bottleneck is the full table scan of the 'users' table, especially if there's no index on 'created_at'. Even with an index on 'created_at', the filtering and subsequent aggregation over potentially a large number of rows can be time-consuming. The calculation of 'avg_days_to_first_login' involves an expression on columns that are not indexed and might require row-by-row processing for all filtered rows.",
+    "affected_tables": [
+      "users"
+    ],
+    "affected_columns": [
+      "created_at",
+      "country_code",
+      "kyc_status",
+      "last_login"
+    ],
+    "issue_classification": "missing_index"
+  },
+  {
+    "query_id": "Q5",
+    "execution_plan_narrative": "The query starts by scanning the 'audit_log' table. It filters records based on the 'created_at' timestamp and the JSONB containment operator '@>' on the 'metadata' column.  It then joins the filtered 'audit_log' records with the 'users' table using a Hash Join on 'user_id'. Finally, it sorts the results in descending order by 'created_at'. The crucial part is that the filtering on 'metadata' using '@>' is likely performed without an efficient index, leading to a sequential scan of 'audit_log' or a scan that has to deserialize and check JSONB for each row. The join to 'users' is efficient due to the 'idx_users_user_id' index (though it should be on 'users.id' which is the PK and thus indexed). The sort at the end might also contribute to overhead if the intermediate result set is large.",
+    "bottleneck": "Inefficient filtering on the JSONB 'metadata' column due to the lack of a GIN index. The query has to examine a large number of rows in 'audit_log' to find those matching the 'metadata' condition.",
+    "affected_tables": [
+      "audit_log",
+      "users"
+    ],
+    "affected_columns": [
+      "audit_log.metadata",
+      "audit_log.created_at",
+      "audit_log.user_id",
+      "users.id"
+    ],
+    "issue_classification": "json_operator_overhead"
+  }
+]

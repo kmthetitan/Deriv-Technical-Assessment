@@ -1,0 +1,26 @@
+[
+  {
+    "query_id": "rewritten_query_comparison",
+    "semantically_equivalent": true,
+    "difference_if_any": "None",
+    "severity": "none"
+  },
+  {
+    "query_id": "rewrite_001",
+    "semantically_equivalent": true,
+    "difference_if_any": "The rewritten query uses 'INNER JOIN' explicitly, while the original query uses the shorthand 'JOIN'. In PostgreSQL, 'JOIN' is an alias for 'INNER JOIN' by default, so the behavior is identical.",
+    "severity": "none"
+  },
+  {
+    "query_id": "rewritten_query_comparison",
+    "semantically_equivalent": true,
+    "difference_if_any": "The rewritten query explicitly casts the date literal '2024-01-01' to 'timestamptz' (timestamp with time zone). The original query relies on PostgreSQL's implicit type casting for date literals. Additionally, the rewritten query uses '86400.0' for division, ensuring floating-point division. The original query would also perform floating-point division due to the result of EXTRACT(EPOCH ...) being a double precision number. These differences are minor and do not alter the logical outcome of the query.",
+    "severity": "none"
+  },
+  {
+    "query_id": "audit_log_rewrite_1",
+    "semantically_equivalent": true,
+    "difference_if_any": "The rewritten query explicitly casts the JSON string '{\"account_id\": 12345}' to the 'jsonb' data type using '::jsonb'. The original query relies on PostgreSQL's implicit type coercion for the '@>' operator when comparing a jsonb column with a text literal that can be interpreted as JSON. While functionally equivalent in this specific case, the explicit cast in the rewritten query can be considered slightly more robust and readable as it clearly states the intended data type.",
+    "severity": "none"
+  }
+]
