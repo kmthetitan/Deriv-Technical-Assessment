@@ -8,7 +8,7 @@ Successfully migrated the PostgreSQL Query Optimization Pipeline from Google Gem
 
 ### 1. Configuration (.env)
 ```diff
-- GEMINI_API_KEY=AIzaSyBc56NN1nJEvxlSWaJZBTl23Gu2LnBhMNg
+- GEMINI_API_KEY=
 + OPENROUTER_API_KEY=your_openrouter_api_key_here
 ```
 
